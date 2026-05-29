@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}My Profile{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+
+{% block content %}
+<!-- Placement Status Banner -->
+<div id="placement-status-box" class="placement-status-card not-placed">
+  <div class="status-icon-big">⏳</div>
+  <div>
+    <div class="status-detail-title">Checking placement status...</div>
+    <div class="status-detail-sub"></div>
+  </div>
+</div>
+
+<!-- Profile Card -->
+<div class="profile-card">
+  <div class="profile-header">
+    <div class="profile-avatar" id="avatar">{{ session.name[0]|upper }}</div>
+    <div>
+      <div class="profile-name"  id="p-name">{{ session.name }}</div>
+      <div class="profile-email" id="p-email"></div>
+    </div>
+  </div>
+  <div class="profile-body">
+    <div class="profile-field"><label>Department</label><div class="value" id="p-dept">—</div></div>
+    <div class="profile-field"><label>CGPA</label><div class="value" id="p-cgpa">—</div></div>
+    <div class="profile-field" style="grid-column:1/-1;"><label>Skills</label><div class="value" id="p-skills">—</div></div>
+  </div>
+</div>
+
+<!-- Eligible Companies + Apply -->
+<div class="card" style="margin-bottom:24px;">
+  <div class="card-header">
+    <div class="card-title">🏢 Companies You Can Apply To</div>
+    <div style="font-size:0.82rem;color:var(--muted);">Only companies matching your CGPA are shown</div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Company</th><th>Role</th><th>Min. CGPA</th><th>Action</th></tr></thead>
+      <tbody id="match-tbody"><tr><td colspan="4" style="text-align:center;padding:32px;color:var(--muted);">Loading...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- My Applications Summary -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">📝 My Applications</div>
+    <a href="{{ url_for('applications') }}" class="btn btn-outline btn-sm">View All →</a>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Company</th><th>Role</th><th>Status</th><th>Applied On</th></tr></thead>
+      <tbody id="my-app-tbody"><tr><td colspan="4" style="text-align:center;padding:24px;color:var(--muted);">Loading...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  let appliedCompanyIds = new Set();
+
+  loadPlacementStatus();
+
+  fetch('/api/my_profile').then(r=>r.json()).then(s => {
+    document.getElementById('p-email').textContent  = s.email;
+    document.getElementById('p-dept').textContent   = s.department;
+    document.getElementById('p-cgpa').innerHTML     = cgpaBadge(s.cgpa);
+    document.getElementById('p-skills').innerHTML   = renderSkillTags(s.skills);
+  });
+
+  fetch('/api/applications').then(r=>r.json()).then(apps => {
+    appliedCompanyIds = new Set(apps.map(a => a.company));
+
+    const appTbody = document.getElementById('my-app-tbody');
+    if (apps.length === 0) {
+      appTbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--muted);">No applications yet. Apply below.</td></tr>`;
+    } else {
+      appTbody.innerHTML = apps.slice(0,5).map(a => `
+        <tr>
+          <td><strong>${a.company}</strong></td>
+          <td>${a.role}</td>
+          <td><span class="status-badge status-${a.status.toLowerCase()}">${a.status}</span></td>
+          <td style="color:var(--muted);font-size:0.83rem">${a.date.slice(0,10)}</td>
+        </tr>
+      `).join('');
+    }
+
+    fetch('/api/my_matches').then(r=>r.json()).then(matches => {
+      const tbody = document.getElementById('match-tbody');
+      if (matches.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:32px;color:var(--muted);">No companies match your CGPA yet.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = matches.map(c => {
+        const alreadyApplied = appliedCompanyIds.has(c.company);
+        return `
+          <tr>
+            <td><strong>${c.company}</strong></td>
+            <td>${c.role}</td>
+            <td>${cgpaBadge(c.min_cgpa)}+</td>
+            <td>
+              <button class="btn btn-apply btn-sm" id="apply-btn-${c.id}"
+                ${alreadyApplied ? 'disabled' : ''}
+                onclick="applyToCompany(${c.id}, this)"
+                data-company-name="${c.company}">
+                ${alreadyApplied ? '✅ Applied' : 'Apply'}
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    });
+  });
+</script>
+{% endblock %}

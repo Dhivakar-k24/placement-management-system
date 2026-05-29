@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Companies{% endblock %}
+{% block page_title %}Companies{% endblock %}
+
+{% block content %}
+{% if session.role == 'admin' %}
+<div class="card" style="margin-bottom:24px;">
+  <div class="card-header"><div class="card-title">➕ Add Recruiting Company</div></div>
+  <div class="card-body">
+    <form onsubmit="addCompany(event)">
+      <div class="form-row">
+        <div class="form-group"><label>Company Name</label><input type="text" name="company_name" placeholder="e.g. Infosys" required></div>
+        <div class="form-group"><label>Job Role</label><input type="text" name="role_name" placeholder="e.g. Software Engineer" required></div>
+        <div class="form-group" style="max-width:160px;"><label>Minimum CGPA</label><input type="number" step="0.1" min="0" max="10" name="min_cgpa" placeholder="7.5" required></div>
+        <div class="form-group" style="max-width:150px;justify-content:flex-end;"><label>&nbsp;</label><button type="submit" class="btn btn-primary">Add Company</button></div>
+      </div>
+    </form>
+  </div>
+</div>
+{% else %}
+<div class="view-only-banner">👁️ You are viewing in read-only mode. Only admins can add or delete records.</div>
+{% endif %}
+
+<div class="card">
+  <div class="card-header"><div class="card-title">Recruiting Companies</div></div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>Company</th><th>Role Offered</th><th>Min. CGPA</th>{% if session.role == 'admin' %}<th>Action</th>{% endif %}</tr></thead>
+      <tbody id="company-tbody"><tr><td colspan="5" style="text-align:center;padding:32px;color:var(--muted);">Loading...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const currentRole = '{{ session.role }}';
+  loadCompanies();
+</script>
+{% endblock %}

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — PlaceTrack</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="public-page">
+  <div class="login-wrap">
+
+    <div class="login-logo">
+      <div class="login-logo-name">📋 PlaceTrack</div>
+      <div class="login-logo-sub">SKASC Placement Cell</div>
+    </div>
+
+    <div class="login-card">
+      <div class="login-title">Sign In</div>
+      <div class="login-hint">Choose your role to continue</div>
+
+      <div class="role-tabs">
+        <button class="role-tab {% if not admin_error %}active{% endif %}" onclick="switchTab('student')">🎓 Student</button>
+        <button class="role-tab {% if admin_error %}active{% endif %}"     onclick="switchTab('admin')">🔐 Admin</button>
+      </div>
+
+      <!-- Student Panel -->
+      <div class="login-panel {% if not admin_error %}active{% endif %}" id="panel-student">
+        {% if student_error %}
+          <div class="login-error">{{ student_error }}</div>
+        {% endif %}
+        <form method="POST" action="{{ url_for('login_student') }}">
+          <div class="login-field">
+            <label>Email Address</label>
+            <input type="email" name="email" placeholder="your@email.com" required autofocus>
+          </div>
+          <div class="login-field">
+            <label>Password</label>
+            <input type="password" name="password" placeholder="Enter password" required>
+          </div>
+          <button type="submit" class="login-submit">Login as Student →</button>
+        </form>
+        <div class="login-footer-link">
+          Don't have an account? <a href="{{ url_for('register') }}">Register here</a>
+        </div>
+      </div>
+
+      <!-- Admin Panel -->
+      <div class="login-panel {% if admin_error %}active{% endif %}" id="panel-admin">
+        {% if admin_error %}
+          <div class="login-error">{{ admin_error }}</div>
+        {% endif %}
+        <form method="POST" action="{{ url_for('login_admin') }}">
+          <div class="login-field">
+            <label>Username</label>
+            <input type="text" name="username" placeholder="admin" required>
+          </div>
+          <div class="login-field">
+            <label>Password</label>
+            <input type="password" name="password" placeholder="Enter password" required>
+          </div>
+          <button type="submit" class="login-submit">Login as Admin →</button>
+        </form>
+      </div>
+    </div>
+
+    <p style="text-align:center;margin-top:20px;font-size:0.8rem;">
+      <a href="{{ url_for('home') }}" style="color:rgba(255,255,255,0.4);">← Back to Home</a>
+    </p>
+  </div>
+</div>
+<script>
+  function switchTab(role) {
+    document.querySelectorAll('.role-tab').forEach((t,i) => {
+      t.classList.toggle('active', (i===0 && role==='student') || (i===1 && role==='admin'));
+    });
+    document.getElementById('panel-student').classList.toggle('active', role==='student');
+    document.getElementById('panel-admin').classList.toggle('active',   role==='admin');
+  }
+</script>
+</body>
+</html>

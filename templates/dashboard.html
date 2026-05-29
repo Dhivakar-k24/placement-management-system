@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-icon">👤</div>
+    <div class="stat-label">Total Students</div>
+    <div class="stat-value">{{ total_students }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">🏢</div>
+    <div class="stat-label">Companies</div>
+    <div class="stat-value">{{ total_companies }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">✅</div>
+    <div class="stat-label">Eligible Students</div>
+    <div class="stat-value">{{ eligible_students }}</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">🎓</div>
+    <div class="stat-label">Placements Done</div>
+    <div class="stat-value">{{ total_placements }}</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><div class="card-title">Quick Actions</div></div>
+  <div class="card-body">
+    <div style="display:flex;flex-wrap:wrap;gap:12px;">
+      <a href="{{ url_for('students') }}"      class="btn btn-primary">👤 Students</a>
+      <a href="{{ url_for('companies') }}"     class="btn btn-primary">🏢 Companies</a>
+      <a href="{{ url_for('placement') }}"     class="btn btn-accent">✅ Eligibility</a>
+      <a href="{{ url_for('placements') }}"    class="btn btn-outline">🎓 Placements</a>
+      <a href="{{ url_for('announcements') }}" class="btn btn-accent">📢 Announcements</a>
+      <a href="{{ url_for('applications') }}"  class="btn btn-outline">📝 Applications</a>
+      {% if session.role == 'student' %}
+      <a href="{{ url_for('profile') }}"       class="btn btn-outline">🪪 My Profile</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Auto-dismiss flash messages
+  document.querySelectorAll('.flash').forEach(el => {
+    setTimeout(() => { el.style.opacity='0'; setTimeout(()=>el.remove(),500); }, 4000);
+  });
+</script>
+{% endblock %}

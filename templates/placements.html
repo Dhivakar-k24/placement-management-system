@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Placements{% endblock %}
+{% block page_title %}Confirmed Placements{% endblock %}
+
+{% block content %}
+{% if session.role == 'admin' %}
+<div class="card" style="margin-bottom:24px;">
+  <div class="card-header"><div class="card-title">➕ Record a Placement</div></div>
+  <div class="card-body">
+    <form onsubmit="addPlacement(event)">
+      <div class="form-row">
+        <div class="form-group"><label>Student (Eligible)</label><select name="student_id" id="sel-student" required><option value="" disabled selected>Loading...</option></select></div>
+        <div class="form-group"><label>Company &amp; Role</label><select name="company_id" id="sel-company" required><option value="" disabled selected>Loading...</option></select></div>
+        <div class="form-group" style="max-width:160px;justify-content:flex-end;"><label>&nbsp;</label><button type="submit" class="btn btn-accent">Record Placement</button></div>
+      </div>
+    </form>
+  </div>
+</div>
+{% else %}
+<div class="view-only-banner">👁️ You are viewing in read-only mode. Only admins can record placements.</div>
+{% endif %}
+
+<div class="card">
+  <div class="card-header"><div class="card-title">Placement Records</div></div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>Student</th><th>Department</th><th>Company</th><th>Role</th><th>Date</th></tr></thead>
+      <tbody id="placement-tbody"><tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted);">Loading...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const currentRole = '{{ session.role }}';
+  loadPlacements();
+</script>
+{% endblock %}

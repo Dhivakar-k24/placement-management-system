@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Announcements{% endblock %}
+{% block page_title %}📢 Announcements{% endblock %}
+
+{% block content %}
+{% if session.role == 'admin' %}
+<div class="card" style="margin-bottom:24px;">
+  <div class="card-header"><div class="card-title">📣 Post New Announcement</div></div>
+  <div class="card-body">
+    <form onsubmit="addAnnouncement(event)">
+      <div class="form-row">
+        <div class="form-group" style="flex:2;">
+          <label>Title</label>
+          <input type="text" name="title" placeholder="e.g. TCS Drive — Register Now" required>
+        </div>
+        <div class="form-group" style="max-width:180px;">
+          <label>Drive Date (optional)</label>
+          <input type="date" name="drive_date">
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:12px;">
+        <label>Message</label>
+        <textarea name="body" rows="3" required
+          style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:7px;font-size:0.9rem;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);resize:vertical;outline:none;"
+          placeholder="Details about the drive, eligibility, what to bring..."></textarea>
+      </div>
+      <div style="margin-top:14px;">
+        <button type="submit" class="btn btn-primary">Post Announcement</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endif %}
+
+<div class="card">
+  <div class="card-header"><div class="card-title">All Announcements</div></div>
+  <div class="card-body">
+    <div id="ann-list"><p style="color:var(--muted);">Loading...</p></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const currentRole = '{{ session.role }}';
+  loadAnnouncements();
+</script>
+{% endblock %}

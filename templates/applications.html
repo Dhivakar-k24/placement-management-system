@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Applications{% endblock %}
+{% block page_title %}{% if session.role == 'admin' %}📝 All Applications{% else %}📝 My Applications{% endif %}{% endblock %}
+
+{% block content %}
+{% if session.role == 'admin' %}
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">All Student Applications</div>
+    <div style="font-size:0.82rem;color:var(--muted);">Change dropdown to update a student's status</div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>Student</th><th>Dept</th><th>CGPA</th><th>Company</th><th>Role</th><th>Status</th><th>Update</th></tr></thead>
+      <tbody id="admin-app-tbody"><tr><td colspan="8" style="text-align:center;padding:32px;color:var(--muted);">Loading...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+{% else %}
+<div class="view-only-banner">📝 Track all your company applications and their current status below.</div>
+<div class="card">
+  <div class="card-header"><div class="card-title">My Applications</div></div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Company</th><th>Role</th><th>Status</th><th>Applied On</th></tr></thead>
+      <tbody id="student-app-tbody"><tr><td colspan="4" style="text-align:center;padding:32px;color:var(--muted);">Loading...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+<p style="font-size:0.82rem;color:var(--muted);margin-top:12px;">
+  💡 To apply for more companies, go to <a href="{{ url_for('profile') }}" style="color:var(--accent);">My Profile</a>.
+</p>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const currentRole = '{{ session.role }}';
+  loadApplications();
+</script>
+{% endblock %}

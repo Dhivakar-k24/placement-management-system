@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}PlaceTrack{% endblock %} — SKASC</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-name">📋 PlaceTrack</div>
+      <div class="brand-sub">SKASC Placement Cell</div>
+    </div>
+    <div class="sidebar-nav">
+      <div class="nav-section-label">Main</div>
+      <a href="{{ url_for('dashboard') }}"     class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
+        <span class="icon">🏠</span><span>Dashboard</span>
+      </a>
+
+      <div class="nav-section-label">Records</div>
+      <a href="{{ url_for('students') }}"      class="nav-link {% if request.endpoint == 'students' %}active{% endif %}">
+        <span class="icon">👤</span><span>Students</span>
+      </a>
+      <a href="{{ url_for('companies') }}"     class="nav-link {% if request.endpoint == 'companies' %}active{% endif %}">
+        <span class="icon">🏢</span><span>Companies</span>
+      </a>
+      <a href="{{ url_for('placements') }}"    class="nav-link {% if request.endpoint == 'placements' %}active{% endif %}">
+        <span class="icon">🎓</span><span>Placements</span>
+      </a>
+
+      <div class="nav-section-label">Reports</div>
+      <a href="{{ url_for('placement') }}"     class="nav-link {% if request.endpoint == 'placement' %}active{% endif %}">
+        <span class="icon">✅</span><span>Eligibility</span>
+      </a>
+
+      <div class="nav-section-label">Activities</div>
+      <a href="{{ url_for('announcements') }}" class="nav-link {% if request.endpoint == 'announcements' %}active{% endif %}">
+        <span class="icon">📢</span><span>Announcements</span>
+      </a>
+      <a href="{{ url_for('applications') }}"  class="nav-link {% if request.endpoint == 'applications' %}active{% endif %}">
+        <span class="icon">📝</span><span>Applications</span>
+      </a>
+
+      {% if session.role == 'student' %}
+      <div class="nav-section-label">My Account</div>
+      <a href="{{ url_for('profile') }}"       class="nav-link {% if request.endpoint == 'profile' %}active{% endif %}">
+        <span class="icon">🪪</span><span>My Profile</span>
+      </a>
+      {% endif %}
+    </div>
+
+    <div class="sidebar-footer">
+      <a href="{{ url_for('logout') }}" class="logout-btn">
+        <span class="icon">⬅️</span>
+        <span class="logout-text">Logout</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+    <div class="topbar">
+      <div class="page-title">{% block page_title %}{% endblock %}</div>
+      <div class="topbar-right">
+        <div class="admin-badge">
+          {% if session.role == 'admin' %}🔐 Admin
+          {% else %}🎓 {{ session.name }}{% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <div class="flash-container">
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">
+            {% if category == 'success' %}✅
+            {% elif category == 'danger' %}❌
+            {% elif category == 'info' %}ℹ️
+            {% else %}⚠️{% endif %}
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    {% endwith %}
+
+    <div class="page-body">
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+
+</div>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

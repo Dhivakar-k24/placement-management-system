@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PlaceTrack — SKASC</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="public-page">
+  <div class="hero">
+    <div class="hero-brand">📋 PlaceTrack</div>
+    <p class="hero-sub">Sri Krishna Arts and Science College — Placement Cell</p>
+    <p class="hero-desc">
+      A centralized platform to manage student profiles, recruiting companies,
+      and placement eligibility — all in one place.
+    </p>
+    <div class="hero-buttons">
+      <a href="{{ url_for('login') }}"     class="hero-btn hero-btn-primary">Login</a>
+      <a href="{{ url_for('register') }}"  class="hero-btn hero-btn-outline">Register as Student</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Students{% endblock %}
+{% block page_title %}Students{% endblock %}
+
+{% block content %}
+{% if session.role == 'admin' %}
+<div class="card" style="margin-bottom:24px;">
+  <div class="card-header"><div class="card-title">➕ Add New Student</div></div>
+  <div class="card-body">
+    <form onsubmit="addStudent(event)">
+      <div class="form-row">
+        <div class="form-group"><label>Full Name</label><input type="text" name="name_" placeholder="e.g. Dhiva K" required></div>
+        <div class="form-group"><label>Email</label><input type="email" name="email" placeholder="email@skasc.ac.in" required></div>
+        <div class="form-group" style="max-width:160px;"><label>Department</label>
+          <select name="department" required>
+            <option value="" disabled selected>Select</option>
+            <option>AIML</option><option>CSE</option><option>IT</option>
+            <option>ECE</option><option>EEE</option><option>MECH</option><option>CIVIL</option>
+          </select>
+        </div>
+        <div class="form-group" style="max-width:120px;"><label>CGPA</label><input type="number" step="0.1" min="0" max="10" name="cgpa" placeholder="8.5" required></div>
+        <div class="form-group"><label>Skills</label><input type="text" name="skills" placeholder="Python, SQL..."></div>
+        <div class="form-group" style="max-width:140px;justify-content:flex-end;"><label>&nbsp;</label><button type="submit" class="btn btn-primary">Add Student</button></div>
+      </div>
+    </form>
+    <p style="font-size:0.78rem;color:var(--muted);margin-top:10px;">ℹ️ Default login password for admin-added students = their email address.</p>
+  </div>
+</div>
+{% else %}
+<div class="view-only-banner">👁️ You are viewing in read-only mode. Only admins can add or delete records.</div>
+{% endif %}
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">All Students</div>
+    <div class="search-bar">
+      <input type="text" id="search-input" placeholder="Search by name or department..." oninput="searchStudents()">
+      <button class="btn btn-primary btn-sm" onclick="searchStudents()">🔍</button>
+      <button class="btn btn-outline btn-sm" onclick="document.getElementById('search-input').value='';loadStudents()">✕</button>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Dept</th><th>CGPA</th><th>Skills</th><th>Status</th>{% if session.role == 'admin' %}<th>Action</th>{% endif %}</tr></thead>
+      <tbody id="student-tbody"><tr><td colspan="8" style="text-align:center;padding:32px;color:var(--muted);">Loading...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const currentRole = '{{ session.role }}';
+  loadStudents();
+</script>
+{% endblock %}
