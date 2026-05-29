@@ -9,7 +9,9 @@
 
 from flask import (Flask, render_template, request, redirect,
                    url_for, session, jsonify, flash)
-from flask_mysqldb import MySQL
+import pymysql
+import pymysql.cursors
+import os
 from functools import wraps
 import hashlib
 
@@ -17,17 +19,19 @@ import hashlib
 # App Setup
 # ------------------------------------------------------------------
 app = Flask(__name__)
-app.secret_key = 'pms_skasc_secret_2024'
+app.secret_key = os.environ.get('SECRET_KEY', 'pms_skasc_secret_2024')
 
 # ------------------------------------------------------------------
-# MySQL Config
+# MySQL Config (works locally and on Railway)
 # ------------------------------------------------------------------
-app.config['MYSQL_HOST']     = 'localhost'
-app.config['MYSQL_USER']     = 'root'
-app.config['MYSQL_PASSWORD'] = ''
-app.config['MYSQL_DB']       = 'placement_db'
-
-mysql = MySQL(app)
+DB_CONFIG = {
+    'host':     os.environ.get('MYSQLHOST',     'localhost'),
+    'user':     os.environ.get('MYSQLUSER',     'root'),
+    'password': os.environ.get('MYSQLPASSWORD', ''),
+    'db':       os.environ.get('MYSQLDATABASE', 'placement_db'),
+    'port':     int(os.environ.get('MYSQLPORT', 3306)),
+    'cursorclass': pymysql.cursors.Cursor
+}
 
 # ------------------------------------------------------------------
 # Admin Credentials
@@ -45,16 +49,19 @@ def check_password(password, hashed):
     return hash_password(password) == hashed
 
 def db_query(sql, params=(), fetch='all'):
-    cur = mysql.connection.cursor()
-    cur.execute(sql, params)
-    if fetch == 'all':
-        result = cur.fetchall()
-    elif fetch == 'one':
-        result = cur.fetchone()
-    else:
-        mysql.connection.commit()
-        result = cur.lastrowid
-    cur.close()
+    conn = pymysql.connect(**DB_CONFIG)
+    try:
+        with conn.cursor() as cur:
+            cur.execute(sql, params)
+            if fetch == 'all':
+                result = cur.fetchall()
+            elif fetch == 'one':
+                result = cur.fetchone()
+            else:
+                conn.commit()
+                result = cur.lastrowid
+    finally:
+        conn.close()
     return result
 
 # ------------------------------------------------------------------
@@ -484,4 +491,5 @@ if __name__ == '__main__':
     print("  Admin login: admin / admin123")
     print("  Students   : Register at /register")
     print("=" * 50)
-    app.run(debug=True)
+    app.run()
+
