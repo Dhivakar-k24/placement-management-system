@@ -484,4 +484,4 @@ if __name__ == '__main__':
     print("  Admin login: admin / admin123")
     print("  Students   : Register at /register")
     print("=" * 50)
-    app.run()
+    app.run(debug=True)
